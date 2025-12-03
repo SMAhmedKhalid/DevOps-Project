@@ -209,7 +209,7 @@ def method_not_allowed(e):
 
 if __name__ == '__main__':
     # For development
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(host='0.0.0.0', port=80, debug=False)
     
     # For production, use gunicorn:
     # gunicorn -w 4 -b 0.0.0.0:5000 app:app
