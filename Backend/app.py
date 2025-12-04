@@ -8,7 +8,7 @@ import threading
 import time
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
+CORS(app)
 
 # Configuration
 LLM_API_URL = "http://51.21.223.41:8000"
