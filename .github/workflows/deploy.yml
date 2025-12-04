@@ -1,0 +1,50 @@
+name: Deploy Backend API
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Set up SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+
+        if [ "${{ secrets.KNOWN_HOSTS }}" != "" ]; then
+          echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+        else
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+        fi
+
+    - name: Deploy to EC2
+      run: |
+        ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+
+        echo "➡ Pulling latest code..."
+        cd /home/ubuntu/backend-api
+        git pull origin main
+
+        echo "➡ Activating venv & installing dependencies..."
+        source venv/bin/activate
+        pip install --upgrade pip
+        pip install -r requirements.txt || true
+
+        echo "➡ Restarting backend-api systemd service..."
+        sudo systemctl daemon-reload
+        sudo systemctl restart backend-api
+        
+        echo "➡ Service status:"
+        sudo systemctl status backend-api --no-pager
+        
+        echo "➡ Recent logs:"
+        sudo journalctl -u backend-api -n 50 --no-pager
+
+        EOF
