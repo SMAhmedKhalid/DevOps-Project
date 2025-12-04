@@ -10,7 +10,7 @@ This project is a production-ready Flask backend hosted on AWS using:
 - SSH-based deployment on push to '''main'''
 
 ## Architecture
-```mermaid
+```
 flowchart TD
     A[Client / Frontend] --> B[Application Load Balancer]
     B --> C[EC2 Backend API (Gunicorn)]
