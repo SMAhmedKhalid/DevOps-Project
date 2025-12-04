@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import requests
 import re
 from datetime import datetime, timedelta
@@ -7,6 +8,7 @@ import threading
 import time
 
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
 
 # Configuration
 LLM_API_URL = "http://51.21.223.41:8000"
